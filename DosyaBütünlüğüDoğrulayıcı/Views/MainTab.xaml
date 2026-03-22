@@ -1,0 +1,142 @@
+<Page x:Class="DosyaBütünlüğüDoğrulayıcı.Views.MainTab"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Title="Main Page"
+      Background="{DynamicResource BackgroundBrush}">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel VerticalAlignment="Top" 
+                   MaxWidth="600"
+                   Margin="30,20,30,30">
+
+            <!-- Başlık -->
+            <TextBlock Text="Hash Calculator" 
+                      FontSize="24" 
+                      FontWeight="Bold"
+                      Foreground="{DynamicResource AccentBrush}"
+                      Margin="0,0,0,30"/>
+
+            <!-- Dosya Seçim Bölümü -->
+            <TextBlock Text="1. Select File" 
+                      FontSize="14"
+                      FontWeight="SemiBold"
+                      Foreground="{DynamicResource ForegroundBrush}"
+                      Margin="0,0,0,12"/>
+            
+            <Border CornerRadius="8" 
+                   Background="{DynamicResource SurfaceBrush}"
+                   BorderBrush="{DynamicResource BorderBrush}"
+                   BorderThickness="1"
+                   Padding="15"
+                   Margin="0,0,0,20">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBox Name="TxtFilePath" 
+                            IsReadOnly="True"
+                            Padding="10"
+                            Text="No file selected..."
+                            VerticalAlignment="Center"/>
+
+                    <Button Grid.Column="1" 
+                           Name="BtnSelectFile"
+                           Content="Select"
+                           Width="100"
+                           Padding="10,8"
+                           Margin="10,0,0,0"
+                           Click="BtnSelectFile_Click"/>
+                </Grid>
+            </Border>
+
+            <!-- Algoritma Seçimi Bölümü -->
+            <TextBlock Text="2. Select Algorithm" 
+                      FontSize="14"
+                      FontWeight="SemiBold"
+                      Foreground="{DynamicResource ForegroundBrush}"
+                      Margin="0,0,0,12"/>
+            
+            <Border CornerRadius="8" 
+                   Background="{DynamicResource SurfaceBrush}"
+                   BorderBrush="{DynamicResource BorderBrush}"
+                   BorderThickness="1"
+                   Padding="15"
+                   Margin="0,0,0,20">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    
+                    <TextBlock Text="SHA256, SHA512, MD5, SHA1 algoritmaları desteklendi." 
+                              FontSize="11"
+                              Foreground="#999999"
+                              Margin="0,0,0,10"/>
+                    
+                    <ComboBox Name="ComboAlgorithm" 
+                             Grid.Row="1"
+                             Padding="10"
+                             SelectedValuePath="Content"
+                             Height="38">
+                        <ComboBoxItem>SHA256</ComboBoxItem>
+                        <ComboBoxItem>SHA512</ComboBoxItem>
+                        <ComboBoxItem>MD5</ComboBoxItem>
+                        <ComboBoxItem>SHA1</ComboBoxItem>
+                    </ComboBox>
+                </Grid>
+            </Border>
+
+            <!-- Buttons -->
+            <TextBlock Text="3. Calculate" 
+                      FontSize="14"
+                      FontWeight="SemiBold"
+                      Foreground="{DynamicResource ForegroundBrush}"
+                      Margin="0,0,0,12"/>
+            
+            <StackPanel Orientation="Horizontal" 
+                       Margin="0,0,0,20"
+                       Height="45">
+                <Button Name="BtnCalculate" 
+                       Content="▶ Calculate"
+                       Width="140"
+                       Padding="10,8"
+                       Click="BtnCalculate_Click"
+                       Margin="0,0,10,0"/>
+
+                <Button Name="BtnCopy" 
+                       Content="📋 Copy"
+                       Width="140"
+                       Padding="10,8"
+                       Click="BtnCopy_Click"
+                       IsEnabled="False"/>
+            </StackPanel>
+
+            <!-- Result Section -->
+            <TextBlock Text="4. Result" 
+                      FontSize="14"
+                      FontWeight="SemiBold"
+                      Foreground="{DynamicResource ForegroundBrush}"
+                      Margin="0,0,0,12"/>
+            
+            <Border CornerRadius="8" 
+                   Background="{DynamicResource SurfaceBrush}"
+                   BorderBrush="{DynamicResource BorderBrush}"
+                   BorderThickness="1"
+                   Padding="15">
+                <TextBox Name="TxtHashResult" 
+                        IsReadOnly="True"
+                        AcceptsReturn="True"
+                        Height="180"
+                        TextWrapping="Wrap"
+                        FontFamily="Consolas, Courier New"
+                        FontSize="11"
+                        Padding="10"
+                        Text="Hash result will be shown here..."/>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+
+</Page>

@@ -1,0 +1,404 @@
+═══════════════════════════════════════════════════════════════════════════════
+    YARININ BAŞLIĞI - GÜN 2 TO-DO LIST
+    (VALIDC# Feature Implementation & Testing)
+═══════════════════════════════════════════════════════════════════════════════
+
+📍 HEDEF: Tüm feature'ları implement et, test et, release build oluştur
+⏱️ SÜRE: 2-3 ders saati
+📂 KONUM: c:\Users\alica\Desktop\VALİDC#\DosyaBütünlüğüDoğrulayıcı\
+
+
+PHASE 8: HASH CALCULATION LOGIC - IMPLEMENTATION & TESTING
+═══════════════════════════════════════════════════════════════════════════════
+
+[ ] 8.1 Test HashService.CalculateHashAsync()
+    ├─ Create test file (test.txt)
+    ├─ Test SHA256 calculation
+    ├─ Test SHA512 calculation
+    ├─ Test MD5 calculation
+    ├─ Test SHA1 calculation
+    └─ Verify hex string format (lowercase)
+
+[ ] 8.2 Verify Performance
+    ├─ Test with small file (~1MB)
+    ├─ Test with medium file (~100MB)
+    ├─ Test with large file (~1GB)
+    └─ Ensure no UI freeze (async working)
+
+[ ] 8.3 MainTab Hash Workflow
+    ├─ Click "Seç" → File dialog open?
+    ├─ Select file → Path shown in TextBox?
+    ├─ Algorithm dropdown works?
+    ├─ Click "Hesapla" → Hash calculated?
+    ├─ Result shown in TextBox with formatting?
+    ├─ Click "Kopyala" → Clipboard has hash?
+    └─ Hash auto-saved to database?
+
+[ ] 8.4 Error Cases
+    ├─ Non-existent file → Error dialog shown?
+    ├─ No file selected → Warning shown?
+    ├─ Permission denied → Handled gracefully?
+    └─ Large file timeout → Show progress?
+
+
+PHASE 9: DATABASE INTEGRATION - FULL TESTING
+═══════════════════════════════════════════════════════════════════════════════
+
+[ ] 9.1 Verify Database Creation
+    ├─ App runs → App.db created?
+    ├─ Location: %APPDATA%\DosyaBütünlüğüDoğrulayıcı\?
+    └─ HashHistory table exists?
+
+[ ] 9.2 CRUD Operations
+    ├─ InsertHashHistory() → Insert working?
+    ├─ GetAllHistory() → Retrieve all records?
+    ├─ Delete → Can remove single record?
+    └─ Verify data types match schema
+
+[ ] 9.3 History List Population
+    ├─ After hash calculation → Auto-insert?
+    ├─ Multiple calculations → Multiple records?
+    ├─ Timestamp correct format?
+    └─ Algorithm field matches selected?
+
+[ ] 9.4 Export Testing
+    ├─ ExportAsCSV() format
+    │  ├─ Header row: "Dosya,Hash,Algoritma,Tarih"
+    │  ├─ Data rows quoted properly
+    │  └─ Encoding UTF-8
+    │
+    ├─ ExportAsJSON() format
+    │  ├─ Valid JSON syntax
+    │  ├─ Pretty-printed (indented)
+    │  ├─ Fields: file, hash, algorithm, date
+    │  └─ Encoding UTF-8
+    │
+    └─ File Save Location
+       ├─ Desktop path correct?
+       ├─ Timestamp in filename?
+       ├─ Correct extension?
+       └─ File readable?
+
+
+PHASE 10: FILE MONITOR IMPLEMENTATION - FULL TESTING
+═══════════════════════════════════════════════════════════════════════════════
+
+[ ] 10.1 Monitor Tab Workflow
+    ├─ Click "Klasör Seç" → Folder dialog open?
+    ├─ Select folder → Path shown in TextBox?
+    ├─ Click "İzlemeyi Başlat" → Monitor starts?
+    ├─ Status text changes to "başladı ✓"?
+    └─ "Durdur" button enabled?
+
+[ ] 10.2 Real-Time File Events
+    ├─ Create new file in monitored folder
+    │  ├─ Event triggered?
+    │  ├─ Item added to ListView?
+    │  ├─ Status: "Yeni"?
+    │  └─ Timestamp correct?
+    │
+    ├─ Modify existing file
+    │  ├─ Event triggered?
+    │  ├─ Item added to ListView?
+    │  ├─ Status: "Değiştirildi"?
+    │  └─ Timestamp current?
+    │
+    └─ Delete file
+       ├─ Event triggered?
+       ├─ Item added to ListView?
+       ├─ Status: "Silindi"?
+       └─ Timestamp recorded?
+
+[ ] 10.3 ListView Binding
+    ├─ Columns display correctly?
+    │  ├─ FileName (250px)?
+    │  ├─ Timestamp (150px)?
+    │  └─ Status (100px)?
+    │
+    ├─ Scrolling works?
+    ├─ ObservableCollection auto-updates?
+    └─ Items sortable (optional)?
+
+[ ] 10.4 Stop Monitoring
+    ├─ Click "İzlemeyi Durdur"
+    ├─ Status changes to "durmuş ⏸"?
+    ├─ Button states toggle correctly?
+    ├─ ListView cleared?
+    └─ FileSystemWatcher disposed?
+
+[ ] 10.5 Edge Cases
+    ├─ Monitor non-existent folder → Error shown?
+    ├─ Monitor network folder → Works?
+    ├─ Monitor with subdirectories → Works?
+    └─ Large number of files → Performance OK?
+
+
+PHASE 11: SETTINGS & PERSISTENCE
+═══════════════════════════════════════════════════════════════════════════════
+
+[ ] 11.1 Theme Persistence
+    ├─ Select dark theme
+    ├─ Close application
+    ├─ Reopen application
+    ├─ Theme still dark?
+    ├─ File saved: ThemeSettings.txt?
+    └─ Toggle to light, restart, verify?
+
+[ ] 11.2 Startup App Registration
+    ├─ CheckBox "Başlangıçta Açılsın"
+    ├─ Check checkbox
+    ├─ Check Windows Registry HKCU\Run
+    │  └─ Entry created: DosyaBütünlüğüDoğrulayıcı?
+    ├─ System restart → App auto-starts?
+    ├─ Uncheck checkbox
+    ├─ Registry entry removed?
+    └─ App doesn't auto-start?
+
+[ ] 11.3 Settings Tab UI
+    ├─ All sections visible?
+    ├─ Buttons clickable?
+    ├─ ComboBox options accessible?
+    └─ Styling consistent with theme?
+
+
+PHASE 12: EXPORT FUNCTIONALITY - FULL INTEGRATION
+═══════════════════════════════════════════════════════════════════════════════
+
+[ ] 12.1 Export Workflow
+    ├─ Add multiple hash records (3+ items)
+    ├─ Go to Settings Tab
+    ├─ ComboBox: Select "CSV"
+    ├─ Click "Dışa Aktar"
+    ├─ File dialog → Desktop?
+    ├─ File created: hash_history_YYYYMMDD_HHMMSS.csv?
+    └─ File content correct?
+
+[ ] 12.2 CSV Export Verification
+    ├─ Open generated .csv file
+    ├─ First line: Header row present?
+    ├─ Data rows: 3+ records?
+    ├─ Columns comma-separated?
+    ├─ Special chars quoted?
+    ├─ UTF-8 encoding OK?
+    └─ Excel opens it correctly?
+
+[ ] 12.3 JSON Export Workflow
+    ├─ ComboBox: Select "JSON"
+    ├─ Click "Dışa Aktar"
+    ├─ File created: hash_history_*.json?
+    ├─ Open file in text editor
+    ├─ Valid JSON syntax?
+    ├─ Pretty-printed (indented)?
+    ├─ Fields correct?
+    ├─ All records included?
+    └─ Can parse with JSON validator?
+
+[ ] 12.4 Error Cases
+    ├─ Export with empty database → Message shown?
+    ├─ Disk full → Error handled?
+    ├─ Permission denied → Handled?
+    └─ Desktop not accessible → Alternative location?
+
+
+PHASE 13: STYLING & THEME SYSTEM
+═══════════════════════════════════════════════════════════════════════════════
+
+[ ] 13.1 Theme Switching
+    ├─ Dark → Light transition
+    │  ├─ Colors change instantly?
+    │  ├─ No flickering?
+    │  ├─ All elements updated?
+    │  └─ Textbox foreground visible?
+    │
+    ├─ Light → Dark transition
+    │  ├─ Same smooth transition?
+    │  ├─ Icons/buttons visible?
+    │  └─ Accent color (#007ACC) visible?
+    │
+    └─ MainWindow theme button
+       ├─ Icon changes (🌙 → ☀️)?
+       └─ Theme actually switches?
+
+[ ] 13.2 UI Elements Styling
+    ├─ Buttons:
+    │  ├─ Rounded corners (CornerRadius)?
+    │  ├─ Hover effects work?
+    │  └─ Text visible in both themes?
+    │
+    ├─ TextBoxes:
+    │  ├─ Monospace font for hash results?
+    │  ├─ Readonly styling distinct?
+    │  └─ Border visible?
+    │
+    ├─ ComboBox:
+    │  ├─ Dropdown works?
+    │  ├─ Items visible?
+    │  └─ Selection highlighted?
+    │
+    └─ ListView:
+       ├─ Headers visible?
+       ├─ Items readable?
+       ├─ Scrollbar works?
+       └─ Alternating colors (if set)?
+
+[ ] 13.3 Sidebar Styling
+    ├─ Background color correct?
+    ├─ Logo visible?
+    ├─ Navigation buttons aligned?
+    ├─ Theme toggle at bottom?
+    └─ Responsive width?
+
+[ ] 13.4 Animations (Optional)
+    ├─ Smooth color transitions?
+    ├─ Button click feedback?
+    ├─ Tab switching smooth?
+    └─ No lag on theme switch?
+
+
+PHASE 14: ERROR HANDLING & VALIDATION
+═══════════════════════════════════════════════════════════════════════════════
+
+[ ] 14.1 File Operations
+    ├─ File not found → Caught + User message?
+    ├─ File locked (in use) → Handled?
+    ├─ Permission denied → Caught?
+    ├─ Corrupted file → Handled?
+    └─ Special character paths → Working?
+
+[ ] 14.2 Database Operations
+    ├─ Database locked → Retry logic?
+    ├─ Insert failure → Logged?
+    ├─ Query empty result → Handled gracefully?
+    ├─ Connection timeout → Error shown?
+    └─ Schema mismatch → Migration?
+
+[ ] 14.3 UI Input Validation
+    ├─ Empty fields → Validation message?
+    ├─ Invalid algorithm → Caught?
+    ├─ No folder selected → Warning shown?
+    └─ Special characters → Escaped?
+
+[ ] 14.4 Async Operation Errors
+    ├─ Hash calculation fails → Try-catch works?
+    ├─ Monitor crashes → Handled?
+    ├─ Export fails → Message shown?
+    └─ Theme load fails → Fallback?
+
+[ ] 14.5 Console / Debug Output
+    ├─ No unhandled exceptions logged?
+    ├─ Debug messages controlled?
+    ├─ Performance logging (optional)?
+    └─ Error log file creation (optional)?
+
+
+PHASE 15: RELEASE & DEPLOYMENT
+═══════════════════════════════════════════════════════════════════════════════
+
+[ ] 15.1 Release Build
+    ├─ Command: dotnet build --configuration Release
+    ├─ No warnings?
+    ├─ Output directory: bin\Release\net6.0-windows\?
+    ├─ .exe generated: DosyaBütünlüğüDoğrulayıcı.exe?
+    └─ File size reasonable (~10-50MB)?
+
+[ ] 15.2 Single File Deployment
+    ├─ Command: dotnet publish -c Release -r win-x64 --self-contained -p:PublishSingleFile=true
+    ├─ Single .exe created?
+    ├─ Size: ~70-150MB (including .NET runtime)?
+    ├─ No dependencies on system (.NET)?
+    └─ Can run from USB drive?
+
+[ ] 15.3 Icon & Logo Integration
+    ├─ app_icon.ico in Resources/?
+    ├─ app_icon.ico referenced in AssemblyInfo?
+    ├─ exe has correct icon?
+    ├─ app_logo.png in Resources/?
+    └─ Logo displays in app?
+
+[ ] 15.4 Final Testing
+    ├─ Run .exe standalone (any PC)
+    ├─ All features work?
+    ├─ Theme persists?
+    ├─ Database creates?
+    ├─ No missing dependencies?
+    └─ Close and reopen works?
+
+[ ] 15.5 Documentation
+    ├─ README.md up-to-date?
+    ├─ Installation instructions clear?
+    ├─ Feature descriptions accurate?
+    ├─ Troubleshooting section added?
+    └─ Version number updated to 1.0.0?
+
+[ ] 15.6 Final Checklist
+    ├─ All 3 tabs fully functional?
+    ├─ Dark/Light theme working?
+    ├─ Database saving/loading?
+    ├─ Export CSV/JSON working?
+    ├─ File monitoring working?
+    ├─ Hash calculation accurate?
+    ├─ No console errors?
+    ├─ No unhandled exceptions?
+    ├─ UI responsive (no freezing)?
+    └─ Turkish text all displayed?
+
+
+═══════════════════════════════════════════════════════════════════════════════
+IMMEDIATE NEXT STEPS (Start of Day 2)
+═══════════════════════════════════════════════════════════════════════════════
+
+1️⃣ FIRST 30 MINUTES:
+   ├─ Open project in Visual Studio 2022
+   ├─ Restore NuGet packages
+   ├─ Build solution (resolve any errors)
+   └─ Run application (F5)
+
+2️⃣ TEST FOUNDATION (30-45 min):
+   ├─ Verify app boots without errors
+   ├─ Test tab navigation
+   ├─ Test theme toggle
+   ├─ Test sidebar buttons
+   └─ Screenshot UI for reference
+
+3️⃣ IMPLEMENT FEATURES (60-90 min per feature):
+   ├─ Phase 8: Hash calculation work correctly
+   ├─ Phase 9: Database operations tested
+   ├─ Phase 10: File monitoring functional
+   ├─ Phase 11: Settings persistence
+   └─ Phase 12: Export functionality
+
+4️⃣ QUALITY ASSURANCE (30 min):
+   ├─ Full feature test pass
+   ├─ Error case handling
+   ├─ Performance check
+   └─ UI/UX review
+
+5️⃣ RELEASE (15-30 min):
+   ├─ Create release build
+   ├─ Single .exe deployment
+   ├─ Final smoke test
+   └─ Documentation finalization
+
+
+═══════════════════════════════════════════════════════════════════════════════
+REFERENCE DOCUMENTS
+═══════════════════════════════════════════════════════════════════════════════
+
+📄 ROADMAP.txt
+   └─ Complete phase breakdown with timing
+
+📄 DAY1_SUMMARY.txt
+   └─ What was completed today
+
+📄 PROJECT_STRUCTURE.txt
+   └─ Visual guide to all files and structure
+
+📄 README.md
+   └─ User documentation and feature descriptions
+
+═══════════════════════════════════════════════════════════════════════════════
+
+                        GO GET THEM! 💪
+                   Build, Test, Deploy, Succeed!
+
+═══════════════════════════════════════════════════════════════════════════════

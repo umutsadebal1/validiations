@@ -1,0 +1,49 @@
+<UserControl x:Class="DosyaBütünlüğüDoğrulayıcı.Views.MonitorTab"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="800"
+             Background="{DynamicResource BackgroundBrush}">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="30,20,30,30">
+            <TextBlock Text="👁️ File Monitoring" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource AccentBrush}" Margin="0,0,0,30"/>
+            <TextBlock Text="Monitor file changes in real-time..." FontSize="12" Foreground="{DynamicResource ForegroundBrush}" TextWrapping="Wrap" Margin="0,0,0,20"/>
+            
+            <TextBlock Text="1. Select Folder" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource ForegroundBrush}" Margin="0,0,0,12"/>
+            <Border CornerRadius="8" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Padding="15" Margin="0,0,0,20">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox Name="TxtFolderPath" IsReadOnly="True" Padding="10" Text="No folder selected..."/>
+                    <Button Grid.Column="1" Name="BtnSelectFolder" Content="📂 SELECT" Margin="10,0,0,0" Click="BtnSelectFolder_Click" Padding="12,8" Width="120"/>
+                </Grid>
+            </Border>
+            
+            <TextBlock Text="2. Manage Monitoring" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource ForegroundBrush}" Margin="0,0,0,12"/>
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
+                <Button Name="BtnStartMonitor" Content="▶ START" Click="BtnStartMonitor_Click" Padding="15,10" Width="150" Margin="0,0,10,0"/>
+                <Button Name="BtnStopMonitor" Content="⏹ STOP" Click="BtnStopMonitor_Click" Padding="15,10" Width="150" IsEnabled="False"/>
+            </StackPanel>
+            
+            <TextBlock Text="3. File Changes" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource ForegroundBrush}" Margin="0,0,0,12"/>
+            <Border CornerRadius="8" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Padding="15" Margin="0,0,0,20">
+                <ListView Name="ListViewMonitor" Height="300" BorderThickness="1" BorderBrush="#3a3a3e">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="📄 File Name" Width="300" DisplayMemberBinding="{Binding FileName}"/>
+                            <GridViewColumn Header="🕐 Time" Width="180" DisplayMemberBinding="{Binding Timestamp}"/>
+                            <GridViewColumn Header="📊 Status" Width="100" DisplayMemberBinding="{Binding Status}"/>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </Border>
+            
+            <TextBlock Name="TxtMonitorStatus" Text="Status: Monitoring stopped" Foreground="{DynamicResource ForegroundBrush}" Margin="0,20,0,0" FontSize="12" FontWeight="SemiBold"/>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

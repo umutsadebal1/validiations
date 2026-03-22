@@ -1,0 +1,282 @@
+📋 PHASE 4-15 TODO - KALAN ÖZELLIKLER
+═════════════════════════════════════════════════════════════════
+
+Bu dosya kalan geliştirilecek özellik ve sayfaları içermektedir.
+Durum: Planlanmış (Sonraki oturumlarda yapılacak)
+
+🎯 PHASE 4 - DASHBOARD TAB (İstatistikler Sekmesi)
+────────────────────────────────────────────────────────────────
+
+Beklenecek Özellikler:
+  □ Dosya sayacı
+  □ Son güncelleme zamanı  
+  □ Değişim algılanan dosya sayısı (Kırmızı gösterge)
+  □ Doğrulanmamış dosya sayısı (Sarı gösterge)
+  □ Son 10 hash listesi tablo
+  □ Hızlı işlem düğmeleri (Yeni, Gözat, Tara)
+
+Dosya Şablonu:
+  - Views/DashboardTab.xaml
+  - Views/DashboardTab.xaml.cs
+
+Estimated Lines: 300 (XAML) + 200 (C#) = 500 lines
+
+---
+
+🎯 PHASE 5 - LOGS TAB (Geçmiş Sekmesi)
+────────────────────────────────────────────────────────────────
+
+Beklenecek Özellikler:
+  □ Arama çubuğu (dosya adı/hash)
+  □ Filtre seçenekleri (Algoritma, Tarih, Durum)
+  □ Hash geçmiş tablosu (Dosya, Durum, Algoritma, Tarih)
+  □ İstatistik göstergesi
+  □ Dışa aktar düğmeleri (CSV, JSON)
+  □ "Hepsini Doğrula" toplu işlem
+  □ Geçmiş sıfırla düğmesi
+
+Dosya Şablonu:
+  - Views/LogsTab.xaml
+  - Views/LogsTab.xaml.cs
+  - Utilities/LogFilterViewModel.cs (MVVM pattern)
+
+Estimated Lines: 400 (XAML) + 300 (C#) = 700 lines
+
+---
+
+🎯 PHASE 6 - UTILITIES - Yardımcı Sınıflar
+────────────────────────────────────────────────────────────────
+
+□ NotificationManager.cs
+  • Toast/Popup bildirim sistemi
+  • Başarı/Hata/Uyarı türleri
+  • Otomatik kapanma zamanı
+
+□ ProgressReporter.cs
+  • Batch işlem ilerleme raporlama
+  • Event-driven pattern
+  • Cancellation token desteği
+
+□ ExportService.cs (Geliştirilmiş)
+  • CSV export (geliştirilmiş sütunlar)
+  • JSON export (yapılandırılmış)
+  • PDF export (isteğe bağlı)
+  • Email attachment
+
+□ ValidationHelper.cs
+  • File path validation
+  • Hash format validation
+  • Directory path validation
+
+Estimated Lines: 500+ total
+
+---
+
+🎯 PHASE 7 - SETTINGS TAB (Ayarlar Sekmesi) - GÜNCELLEME
+────────────────────────────────────────────────────────────────
+
+Mevcut özellikler:
+  ✅ Tema seçimi (Koyu/Işık)
+  ✅ Uygulamanın başlangıcında açılmasını sağlama
+
+Eklenecek özellikler:
+  □ Hash'in default algoritmasını seçme
+  □ İstatistikler güncellenme aralığı
+  □ Monitör klasörü seçimi
+  □ Otomatik backup ayarları
+  □ Yazı tipi boyutu ayarı
+  □ Dil seçimi (Turkish/English)
+  □ Veritabanı yolu özelleştirmesi
+
+---
+
+🎯 PHASE 8 - DATABASE SCHEMA MIGRATION
+────────────────────────────────────────────────────────────────
+
+Mevcut tablo: HashHistory (5 sütun)
+
+Yeni tablolar gerekli:
+
+□ FileHashLog (Detaylı hash kaydedici)
+  - Id (INT PK)
+  - FilePath (TEXT UNIQUE)
+  - FileHash (TEXT)
+  - Algorithm (TEXT)
+  - FileSizeBytes (BIGINT)
+  - Status (TEXT: OK/CHANGED/ERROR/UNVERIFIED)
+  - CreatedAt (DATETIME)
+  - LastVerifiedAt (DATETIME)
+  - VerifiedCount (INT)
+  - Version (INT)
+  - IsValid (BOOLEAN)
+  - CreatedBy (TEXT)
+
+□ FileHashHistory (Tarihsel versiyon takibi)
+  - Id (INT PK)
+  - FileHashLogId (INT FK)
+  - OldHash (TEXT)
+  - NewHash (TEXT)
+  - ChangeReason (TEXT)
+  - ChangedAt (DATETIME)
+  - ChangedBy (TEXT)
+
+□ VerificationLog (Doğrulama olayları)
+  - Id (INT PK)
+  - FileHashLogId (INT FK)
+  - Status (TEXT: MATCH/MISMATCH/ERROR)
+  - TimeTakenMs (INT)
+  - VerifiedAt (DATETIME)
+  - VerifiedBy (TEXT)
+  - Notes (TEXT)
+
+Migration tools:
+  □ DatabaseService.MigrateToV2() metodu
+  □ Backup önceki veriler
+  □ Schema versioning (v1 → v2)
+
+---
+
+🎯 PHASE 9 - BATCH PROCESSING UI
+────────────────────────────────────────────────────────────────
+
+Özellikler:
+  □ Klasör seçimi
+  □ Dosya tipi filtresi (*.exe, *.dll, *.zip, vb.)
+  □ Recursive (alt klasörleri de taraması)
+  □ Algoritma seçimi
+  □ İlerleme göstergesi (% ile)
+  □ Zaman tahmini
+  □ Pausable/Resumable işlem
+  □ İptal düğmesi
+  □ Sonuç özeti (X/Y başarılı, Z hata)
+
+Dosya:
+  - Views/BatchProcessingWindow.xaml/cs
+
+---
+
+🎯 PHASE 10 - FILE MONITORING ENHANCEMENTS
+────────────────────────────────────────────────────────────────
+
+Improvements:
+  □ Real-time alerts
+  □ Susturma seçeneği
+  □ Bildirime tıklandığında doğrulama tetikleme
+  □ Önceden tanımlı klasörler
+  □ Ağ klasörü desteği
+  □ Sembolik link desteği
+
+---
+
+🎯 PHASE 11 - EXPORT & REPORTING
+────────────────────────────────────────────────────────────────
+
+Özellikler:
+  □ CSV Export (geliştirilmiş)
+  □ JSON Export (yapılandırılmış)
+  □ PDF Report (grafik ile)
+  □ HTML Report (interaktif)
+  □ Excel Export (multiple sheets)
+  □ Email gönderme
+  □ Scheduled export
+  □ Template özelleştirmesi
+
+---
+
+🎯 PHASE 12 - SECURITY FEATURES
+────────────────────────────────────────────────────────────────
+
+Özellikler:
+  □ Şifreli hash depolama
+  □ Veritabanı şifreleme
+  □ İzin kontrolü (Admin, User)
+  □ Audit log (Kim ne yaptı)
+  □ Application lockdown
+  □ Code signing
+
+---
+
+🎯 PHASE 13 - PERFORMANCE & OPTIMIZATION
+────────────────────────────────────────────────────────────────
+
+Özellikler:
+  □ Large file optimization (chunk processing)
+  □ Database indeksleme
+  □ Memory Cache (LRU)
+  □ Multi-threading
+  □ GPU acceleration (optional)
+  □ Lazy loading
+  □ Profiling & optimization
+
+---
+
+🎯 PHASE 14 - TESTING & DEBUGGING
+────────────────────────────────────────────────────────────────
+
+Tests:
+  □ Unit Tests (XUnit)
+    • HashService.cs
+    • DatabaseService.cs
+    • VerificationService.cs
+  
+  □ Integration Tests
+    • Veritabanı işlemleri
+    • Doğrulama workflow
+  
+  □ UI Tests (automation)
+    • Tab navigation
+    • File selection
+    • Verification flow
+  
+  □ Performance Tests
+    • Large file handling
+    • Batch processing speed
+  
+  □ Stress Tests
+    • 1000+ files in database
+
+---
+
+🎯 PHASE 15 - DEPLOYMENT & DISTRIBUTION
+────────────────────────────────────────────────────────────────
+
+Özellikler:
+  □ .exe oluşturma (MSIX)
+  □ Installer (WiX Toolset)
+  □ Auto-update mekanizması
+  □ Release notes
+  □ Documentation (PDF)
+  □ GitHub Actions CI/CD
+  □ Code signing certificate
+  □ Portable version
+
+---
+
+⏱️ ESTIMATED TIMELINE
+════════════════════════════════════════════════════════════════
+
+Phase 1-3: ✅ TAMAMLANDI (3 oturum)
+Phase 4-5: Dashboard + Logs (1 oturum - 2 saat)
+Phase 6-7: Utilities + Settings (1 oturum - 1.5 saat)
+Phase 8-9: Database + Batch (1 oturum - 2 saat)
+Phase 10-12: Monitoring + Security (2 oturum - 3 saat)
+Phase 13-15: Performance + Testing + Deployment (2 oturum - 3 saat)
+
+TOPLAM TAHMINI: 11.5 saat
+
+NEXT SESSION YAPILACAKLAR:
+════════════════════════════════════════════════════════════════
+
+Öncelik sırası:
+
+1️⃣ DashboardTab.xaml/cs (İstatistikler)
+2️⃣ LogsTab.xaml/cs (Geçmiş & Filtreler)
+3️⃣ MainWindow tab navigation güncelle
+4️⃣ NotificationManager.cs ekleme
+5️⃣ Database schema migration (v1→v2)
+
+Bu adımlardan sonra uygulama temel olarak TAMAMLANDI olacaktır.
+
+Geri kalan fazlar ise "nice to have" özellikleridir.
+
+═════════════════════════════════════════════════════════════════

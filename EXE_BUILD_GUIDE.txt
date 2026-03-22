@@ -1,0 +1,189 @@
+📦 EXE OLUŞTURMA REHBERI - VS CODE İLE
+═════════════════════════════════════════════════════════════════
+
+VS Studio hiç açmadan EXE oluştur! Terminal yeterli.
+
+[1️⃣ ADIM - Proje Klasörünü Aç]
+════════════════════════════════════════════════════════════════
+
+VS Code'da:
+  • File → Open Folder
+  • Seç: c:\Users\alica\Desktop\VALİDC#\DosyaBütünlüğüDoğrulayıcı
+  • (Üstteki klasör değil, DosyaBütünlüğüDoğrulayıcı klasörü seç)
+
+Doğrulama:
+  • Sol panel'de görmeli:
+    ├── Models/
+    ├── Services/
+    ├── Views/
+    ├── Resources/
+    ├── MainWindow.xaml
+    └── DosyaBütünlüğüDoğrulayıcı.csproj ← BU DOSYA ÖNEMLİ
+
+
+[2️⃣ ADIM - Terminal Aç]
+════════════════════════════════════════════════════════════════
+
+Ctrl + ` (backtick - Ñ tuşunun sağında)
+  VEYA
+Ctrl + Shift + P → "Terminal: Create New Terminal"
+
+PowerShell açılmalı (sol altta)
+
+
+[3️⃣ ADIM - Derleme Testi (İsteğe Bağlı)]
+════════════════════════════════════════════════════════════════
+
+Komut:
+  dotnet build
+
+Output:
+  ...
+  Build succeeded.
+  Time elapsed: 00:00:10.123
+
+
+[4️⃣ ADIM - EXE OLUŞTUR (Self-Contained)]
+════════════════════════════════════════════════════════════════
+
+Komut:
+  dotnet publish -c Release -r win-x64 --self-contained
+
+Ne yapıyor?
+  -c Release      → Release mode (hızlı)
+  -r win-x64      → Windows 64-bit
+  --self-contained → .NET runtime'ı dahil et (EXE tek dosya gibi çalışır)
+
+Süre: 1-2 dakika (ilk kez daha uzun olabilir)
+
+Output sonunda göreceksin:
+  DosyaBütünlüğüDoğrulayıcı -> C:\Users\alica\Desktop\VALİDC#\DosyaBütünlüğüDoğrulayıcı\bin\Release\net6.0-windows\win-x64\publish\
+  
+  Publishing succeeded.
+
+
+[5️⃣ ADIM - EXE'yi Bul]
+════════════════════════════════════════════════════════════════
+
+Path (kopyala-yapıştır):
+  C:\Users\alica\Desktop\VALİDC#\DosyaBütünlüğüDoğrulayıcı\bin\Release\net6.0-windows\win-x64\publish\
+
+Windows Explorer'da:
+  1. C: drive → Users → alica → Desktop → VALİDC#
+  2. DosyaBütünlüğüDoğrulayıcı → bin → Release
+  3. net6.0-windows → win-x64 → publish
+  4. DosyaBütünlüğüDoğrulayıcı.exe ← BU!
+
+Dosya Boyutu: ~150-200 MB (self-contained olduğu için)
+
+
+[6️⃣ ADIM - BAŞLAT!]
+════════════════════════════════════════════════════════════════
+
+Double-click:
+  DosyaBütünlüğüDoğrulayıcı.exe
+
+Uygulama başlamalı! 🎉
+
+
+[🎯 ALTERNATIF - DAHA DAR EXE İSTE]
+════════════════════════════════════════════════════════════════
+
+Runtime dependency'i içişiyle yaşa (hafif):
+
+  dotnet publish -c Release -r win-x64
+
+Dosya Boyutu: ~20-30 MB
+Ama: .NET 6 runtime yüklü olması gerekli
+
+→ Çoğu Windows bilgisayarda zaten var
+→ Yoksa: https://dotnet.microsoft.com/download/dotnet/6.0 indir
+
+
+[⚠️ SORUN: Türkçe PATH]
+════════════════════════════════════════════════════════════════
+
+Eğer hata alırsan:
+  "Exception: Veritabanı başlatılamadı..."
+
+ÇÖZÜM - C: drive'a kırpıştır:
+
+Terminal'de:
+  cd C:\Temp
+  
+  (aynı komut)
+  dotnet publish -c Release -r win-x64 --self-contained
+
+Sonra C:\Temp\bin\Release\net6.0-windows\...publish\ konumuna gider
+
+
+VEYA - .csproj fix:
+
+DosyaBütünlüğüDoğrulayıcı.csproj aç:
+
+<PropertyGroup>
+  <OutputType>WinExe</OutputType>
+  <TargetFramework>net6.0-windows</TargetFramework>
+  <RootNamespace>DosyaBütünlüğüDoğrulayıcı</RootNamespace>
+  <UseWPF>true</UseWPF>
+  <PublishDir>.\bin\Release\publish</PublishDir>  ← BU SATIR EKLE
+</PropertyGroup>
+
+Sonra:
+  dotnet publish -c Release -r win-x64 --self-contained
+
+
+[✅ KONTROL LISTESI]
+════════════════════════════════════════════════════════════════
+
+[ ] VS Code'da proje klasörü açıldı
+[ ] Ctrl + ` ile terminal açıldı
+[ ] dotnet build başarılı oldu
+[ ] dotnet publish komutu çalıştırıldı
+[ ] EXE dosyası found: \publish\DosyaBütünlüğüDoğrulayıcı.exe
+[ ] EXE double-click ile çalıştı
+[ ] Uygulama penceresi göründü
+[ ] Sidebar'da 4 buton var
+[ ] "🔐 DOĞRULA" tab'ı var
+
+HEPSİ ✓ = BAŞARILI! 🎉
+
+
+[🚀 PAYLAŞMA]
+════════════════════════════════════════════════════════════════
+
+EXE'yi kopyala:
+  \publish\ klasöründeki TÜM DOSYALARI (sadece .exe değil!)
+
+ZIP'le:
+  Sağ tıkla → Send To → Compressed (zipped) folder
+
+Share:
+  - Google Drive
+  - WeTransfer
+  - Email
+  - Discord
+
+Alıcı sadece ZIP'i extract etse .exe çalışır!
+
+
+[💡 PRO TİPS]
+════════════════════════════════════════════════════════════════
+
+1. Quick rebuild:
+   dotnet build
+
+2. Clean output:
+   dotnet clean
+
+3. Framework runtime'ı kullan (hafif):
+   dotnet publish -c Release -r win-x64
+
+4. Windows 10 teslimat:
+   dotnet publish -c Release -r win-x64 -p:PublishTrimmed=true
+
+5. MSIX installer (Windows Store):
+   dotnet publish -c Release -r win-x64 --self-contained -p:GenerateAppxPackageOnBuild=true
+
+
+═════════════════════════════════════════════════════════════════

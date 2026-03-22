@@ -1,0 +1,17 @@
+# This file tells git to ignore temporary and build files
+bin/
+obj/
+*.user
+*.suo
+*.sln.docstates
+.vs/
+.vscode/
+*.log
+packages/
+.DS_Store
+Thumbs.db
+*.exe
+*.dll
+*.pdb
+App.db
+ThemeSettings.txt
