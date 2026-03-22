@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
@@ -7,13 +8,26 @@ using DosyaBütünlüğüDoğrulayıcı.Models;
 namespace DosyaBütünlüğüDoğrulayıcı.Services
 {
     /// <summary>
-    /// Dosya hash hesaplama servisi
-    /// Desteklenen Algoritmalar: SHA256, SHA512, MD5, SHA1
+    /// File hash calculation service
+    /// Supported Algorithms: SHA256, SHA512, MD5, SHA1
     /// </summary>
     public class HashService
     {
+        private static readonly string LogPath = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            "DosyaBütünlüğüDoğrulayıcı",
+            "Logs"
+        );
+
+        public HashService()
+        {
+            // Ensure log directory exists
+            if (!Directory.Exists(LogPath))
+                Directory.CreateDirectory(LogPath);
+        }
+
         /// <summary>
-        /// Dosya hash'ini hesapla (asynchronous)
+        /// Calculate file hash (asynchronous)
         /// </summary>
         public async Task<HashResult> CalculateHashAsync(string filePath, string algorithm = "SHA256")
         {
@@ -22,12 +36,12 @@ namespace DosyaBütünlüğüDoğrulayıcı.Services
                 try
                 {
                     if (!File.Exists(filePath))
-                        throw new FileNotFoundException($"Dosya bulunamadı: {filePath}");
+                        throw new FileNotFoundException($"File not found: {filePath}");
 
                     var fileInfo = new FileInfo(filePath);
                     string hash = ComputeHash(filePath, algorithm);
 
-                    return new HashResult
+                    var result = new HashResult
                     {
                         FilePath = filePath,
                         FileHash = hash,
@@ -35,16 +49,70 @@ namespace DosyaBütünlüğüDoğrulayıcı.Services
                         CalculatedAt = DateTime.Now,
                         FileSizeBytes = fileInfo.Length
                     };
+
+                    LogOperation($"File hash calculated: {Path.GetFileName(filePath)} ({algorithm})");
+                    return result;
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception($"Hash hesaplanırken hata: {ex.Message}", ex);
+                    LogError($"Error calculating hash for {filePath}: {ex.Message}");
+                    throw new Exception($"Error calculating hash: {ex.Message}", ex);
                 }
             });
         }
 
         /// <summary>
-        /// Hash değerini hesapla (synchronous helper)
+        /// Calculate hashes for all files in a folder
+        /// </summary>
+        public async Task<List<HashResult>> CalculateFolderHashAsync(string folderPath, string algorithm = "SHA256")
+        {
+            return await Task.Run(() =>
+            {
+                var results = new List<HashResult>();
+
+                try
+                {
+                    if (!Directory.Exists(folderPath))
+                        throw new DirectoryNotFoundException($"Folder not found: {folderPath}");
+
+                    var files = Directory.GetFiles(folderPath, "*.*", SearchOption.AllDirectories);
+                    LogOperation($"Starting folder hash calculation: {folderPath} ({files.Length} files, {algorithm})");
+
+                    foreach (var file in files)
+                    {
+                        try
+                        {
+                            var fileInfo = new FileInfo(file);
+                            string hash = ComputeHash(file, algorithm);
+
+                            results.Add(new HashResult
+                            {
+                                FilePath = file,
+                                FileHash = hash,
+                                Algorithm = algorithm,
+                                CalculatedAt = DateTime.Now,
+                                FileSizeBytes = fileInfo.Length
+                            });
+                        }
+                        catch (Exception ex)
+                        {
+                            LogError($"Skipped file {file}: {ex.Message}");
+                        }
+                    }
+
+                    LogOperation($"Folder hash calculation completed: {results.Count} files processed");
+                    return results;
+                }
+                catch (Exception ex)
+                {
+                    LogError($"Error calculating folder hash for {folderPath}: {ex.Message}");
+                    throw;
+                }
+            });
+        }
+
+        /// <summary>
+        /// Compute hash value (synchronous helper)
         /// </summary>
         private string ComputeHash(string filePath, string algorithm)
         {
@@ -75,7 +143,7 @@ namespace DosyaBütünlüğüDoğrulayıcı.Services
                         break;
 
                     default:
-                        throw new NotSupportedException($"Desteklenmeyen algoritma: {algorithm}");
+                        throw new NotSupportedException($"Unsupported algorithm: {algorithm}");
                 }
 
                 return BytesToHex(hashBytes);
@@ -83,7 +151,7 @@ namespace DosyaBütünlüğüDoğrulayıcı.Services
         }
 
         /// <summary>
-        /// Byte dizisini hexadecimal string'e dönüştür
+        /// Convert byte array to hexadecimal string
         /// </summary>
         private string BytesToHex(byte[] bytes)
         {
@@ -91,11 +159,39 @@ namespace DosyaBütünlüğüDoğrulayıcı.Services
         }
 
         /// <summary>
-        /// Desteklenen algoritmaları döndür
+        /// Get supported algorithms
         /// </summary>
         public static string[] GetSupportedAlgorithms()
         {
             return new[] { "SHA256", "SHA512", "MD5", "SHA1" };
+        }
+
+        /// <summary>
+        /// Log operation to file
+        /// </summary>
+        private void LogOperation(string message)
+        {
+            try
+            {
+                string logFile = Path.Combine(LogPath, $"hash_log_{DateTime.Now:yyyy-MM-dd}.txt");
+                string logEntry = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] {message}";
+                File.AppendAllText(logFile, logEntry + Environment.NewLine);
+            }
+            catch { /* Log file write errors are silently ignored */ }
+        }
+
+        /// <summary>
+        /// Log error to file
+        /// </summary>
+        private void LogError(string message)
+        {
+            try
+            {
+                string logFile = Path.Combine(LogPath, $"hash_error_{DateTime.Now:yyyy-MM-dd}.txt");
+                string logEntry = $"[ERROR] [{DateTime.Now:yyyy-MM-dd HH:mm:ss}] {message}";
+                File.AppendAllText(logFile, logEntry + Environment.NewLine);
+            }
+            catch { /* Log file write errors are silently ignored */ }
         }
     }
 }

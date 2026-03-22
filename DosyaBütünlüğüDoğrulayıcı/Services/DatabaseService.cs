@@ -21,6 +21,16 @@ namespace DosyaBütünlüğüDoğrulayıcı.Services
         public DatabaseService()
         {
             var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            if (string.IsNullOrWhiteSpace(appDataPath))
+            {
+                appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            }
+
+            if (string.IsNullOrWhiteSpace(appDataPath))
+            {
+                appDataPath = AppDomain.CurrentDomain.BaseDirectory;
+            }
+
             var dbPath = Path.Combine(appDataPath, "DosyaBütünlüğüDoğrulayıcı");
 
             if (!Directory.Exists(dbPath))

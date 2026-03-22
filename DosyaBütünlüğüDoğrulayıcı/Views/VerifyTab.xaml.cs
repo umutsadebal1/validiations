@@ -20,39 +20,39 @@ namespace DosyaBütünlüğüDoğrulayıcı.Views
             _verificationService = new VerificationService();
             _databaseService = new DatabaseService();
 
-            // Event handler'ı bağla
+            // Wire up event handlers.
             _verificationService.ProgressUpdated += OnProgressUpdated;
             _verificationService.VerificationCompleted += OnVerificationCompleted;
         }
 
         /// <summary>
-        /// Dosya seçme iletişim kutusu
+        /// Open file selection dialog
         /// </summary>
         private void BrowseButton_Click(object sender, RoutedEventArgs e)
         {
             var openFileDialog = new OpenFileDialog
             {
-                Title = "Dosya Seçin",
-                Filter = "Tüm Dosyalar (*.*)|*.*"
+                Title = "Select File",
+                Filter = "All Files (*.*)|*.*"
             };
 
             if (openFileDialog.ShowDialog() == true)
             {
                 FilePathTextBox.Text = openFileDialog.FileName;
-                HashInfoTextBlock.Text = $"Yol: {openFileDialog.FileName}";
+                HashInfoTextBlock.Text = $"Path: {openFileDialog.FileName}";
 
-                // Dosya için veritabanında hash olup olmadığını kontrol et
+                // Check whether there is a stored hash for the selected file.
                 var dbHash = _databaseService.GetHashByFilePath(openFileDialog.FileName);
                 if (!string.IsNullOrEmpty(dbHash))
                 {
-                    HashInfoTextBlock.Text = $"✅ Veritabanında bulundu";
+                    HashInfoTextBlock.Text = "✅ Found in database";
                     OldHashTextBox.Text = dbHash;
                 }
             }
         }
 
         /// <summary>
-        /// Yapıştır düğmesi
+        /// Paste button handler
         /// </summary>
         private void PasteButton_Click(object sender, RoutedEventArgs e)
         {
@@ -62,12 +62,12 @@ namespace DosyaBütünlüğüDoğrulayıcı.Views
             }
             catch
             {
-                MessageBox.Show("Pano okunamadı", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Clipboard could not be read.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
         /// <summary>
-        /// Veritabanından yükle
+        /// Load hash value from database
         /// </summary>
         private void LoadFromDatabaseButton_Click(object sender, RoutedEventArgs e)
         {
@@ -75,7 +75,7 @@ namespace DosyaBütünlüğüDoğrulayıcı.Views
 
             if (string.IsNullOrEmpty(filePath))
             {
-                MessageBox.Show("Lütfen önce dosya seçin", "Uyarı", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Please select a file first.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -83,16 +83,16 @@ namespace DosyaBütünlüğüDoğrulayıcı.Views
 
             if (string.IsNullOrEmpty(dbHash))
             {
-                MessageBox.Show("Bu dosya veritabanında kaydedilmiş değil", "Uyarı", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("This file is not stored in the database.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             OldHashTextBox.Text = dbHash;
-            HashInfoTextBlock.Text = "✅ Veritabanından yüklendi";
+            HashInfoTextBlock.Text = "✅ Loaded from database";
         }
 
         /// <summary>
-        /// Karşılaştırma işlemini başlat
+        /// Start comparison operation
         /// </summary>
         private void CompareButton_Click(object sender, RoutedEventArgs e)
         {
@@ -100,55 +100,55 @@ namespace DosyaBütünlüğüDoğrulayıcı.Views
             var oldHash = OldHashTextBox.Text.Trim();
             var algorithm = (AlgorithmComboBox.SelectedItem as ComboBoxItem)?.Content.ToString() ?? "SHA256";
 
-            // Validasyon
+            // Validation
             if (string.IsNullOrEmpty(filePath))
             {
-                ShowError("Lütfen dosya seçin");
+                ShowError("Please select a file.");
                 return;
             }
 
             if (string.IsNullOrEmpty(oldHash))
             {
-                ShowError("Lütfen eski hash'i girin");
+                ShowError("Please enter the original hash.");
                 return;
             }
 
             if (!_verificationService.IsValidHashFormat(oldHash))
             {
-                ShowError("Geçersiz hash formatı. Hash'in hex karakter (0-9, a-f) içermesi gerekir");
+                ShowError("Invalid hash format. The hash must contain hexadecimal characters (0-9, a-f).");
                 return;
             }
 
             if (!_verificationService.IsValidHashLength(oldHash, algorithm))
             {
-                ShowError($"Geçersiz hash uzunluğu. {algorithm} için {(algorithm switch { "SHA256" => 64, "SHA512" => 128, "MD5" => 32, "SHA1" => 40, _ => "?" })} karakter olmalı");
+                ShowError($"Invalid hash length. {algorithm} requires {(algorithm switch { "SHA256" => 64, "SHA512" => 128, "MD5" => 32, "SHA1" => 40, _ => "?" })} characters.");
                 return;
             }
 
-            // UI güncelle
+            // Update UI
             ProgressBar.Value = 0;
             ResultBorder.Visibility = Visibility.Collapsed;
             ErrorBorder.Visibility = Visibility.Collapsed;
             CompareButton.IsEnabled = false;
 
-            // Karşılaştırmayı async yap
+            // Run comparison asynchronously
             _ = _verificationService.CompareHashesAsync(filePath, oldHash, algorithm);
         }
 
         /// <summary>
-        /// İlerleme güncellemesi
+        /// Progress update handler
         /// </summary>
         private void OnProgressUpdated(string message)
         {
             Dispatcher.Invoke(() =>
             {
                 ProgressTextBlock.Text = message;
-                ProgressBar.Value = Math.Min(ProgressBar.Value + 25, 95); // Plus animasyon
+                ProgressBar.Value = Math.Min(ProgressBar.Value + 25, 95);
             });
         }
 
         /// <summary>
-        /// Doğrulama tamamlandı
+        /// Verification completed handler
         /// </summary>
         private void OnVerificationCompleted(VerificationResult result)
         {
@@ -158,13 +158,13 @@ namespace DosyaBütünlüğüDoğrulayıcı.Views
                 ProgressBar.Value = 100;
                 CompareButton.IsEnabled = true;
 
-                // Sonuç göster
+                // Display result
                 DisplayResult(result);
             });
         }
 
         /// <summary>
-        /// Sonucu ekranda göster
+        /// Show result on screen
         /// </summary>
         private void DisplayResult(VerificationResult result)
         {
@@ -176,14 +176,14 @@ namespace DosyaBütünlüğüDoğrulayıcı.Views
                 return;
             }
 
-            // Renk ayarla
+            // Set status color styling.
             var statusColor = result.GetStatusColor();
             ResultBorder.BorderBrush = new System.Windows.Media.SolidColorBrush(statusColor);
             ResultBorder.Background = new System.Windows.Media.SolidColorBrush(
                 System.Windows.Media.Color.FromArgb(30, statusColor.R, statusColor.G, statusColor.B)
             );
 
-            // Metin güncelle
+            // Update text fields.
             ResultStatusIcon.Text = result.GetStatusIcon();
             ResultStatusText.Text = result.Message;
             ResultStatusText.Foreground = new System.Windows.Media.SolidColorBrush(statusColor);
@@ -196,34 +196,34 @@ namespace DosyaBütünlüğüDoğrulayıcı.Views
             ResultTime.Text = $"{result.TimeTakenMs}ms";
             ResultDateTime.Text = result.VerifiedAt.ToString("yyyy-MM-dd HH:mm:ss");
 
-            // Hash'ler
+            // Hash values
             ResultOldHash.Text = result.OldHash;
             ResultNewHash.Text = result.NewHash;
 
-            // Düğmeleri göster/gizle
+            // Toggle action buttons based on result status.
             UpdateDatabaseButton.Visibility = result.Status == VerificationResult.VerificationStatus.Mismatch 
                 ? Visibility.Visible 
                 : Visibility.Collapsed;
 
             ResultBorder.Visibility = Visibility.Visible;
-            ProgressTextBlock.Text = "Doğrulama tamamlandı";
+            ProgressTextBlock.Text = "Verification completed";
         }
 
         /// <summary>
-        /// Hata göster
+        /// Show error state
         /// </summary>
         private void ShowError(string message)
         {
             ResultBorder.Visibility = Visibility.Collapsed;
             ErrorMessageTextBlock.Text = message;
             ErrorBorder.Visibility = Visibility.Visible;
-            ProgressTextBlock.Text = "Hata oluştu";
+            ProgressTextBlock.Text = "An error occurred";
             ProgressBar.Value = 0;
             CompareButton.IsEnabled = true;
         }
 
         /// <summary>
-        /// Veritabanını güncelle
+        /// Update database with verification result
         /// </summary>
         private void UpdateDatabaseButton_Click(object sender, RoutedEventArgs e)
         {
@@ -234,17 +234,17 @@ namespace DosyaBütünlüğüDoğrulayıcı.Views
 
             if (success)
             {
-                MessageBox.Show("Veritabanı başarıyla güncellendi", "Başarılı", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Database updated successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 ClearButton_Click(null, null);
             }
             else
             {
-                MessageBox.Show("Veritabanı güncellenirken hata oluştu", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("An error occurred while updating the database.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
         /// <summary>
-        /// Detaylı rapor göster
+        /// Copy detailed report to clipboard and show dialog
         /// </summary>
         private void DetailedReportButton_Click(object sender, RoutedEventArgs e)
         {
@@ -253,12 +253,12 @@ namespace DosyaBütünlüğüDoğrulayıcı.Views
 
             var report = _lastResult.GetDetailedReport();
             Clipboard.SetText(report);
-            MessageBox.Show("Rapor panoya kopyalandı:\r\n\r\n" + report, "Detaylı Rapor", 
+            MessageBox.Show("Report copied to clipboard:\r\n\r\n" + report, "Detailed Report", 
                 MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         /// <summary>
-        /// Hash'i kopyala
+        /// Copy new hash to clipboard
         /// </summary>
         private void CopyHashButton_Click(object sender, RoutedEventArgs e)
         {
@@ -268,16 +268,16 @@ namespace DosyaBütünlüğüDoğrulayıcı.Views
             try
             {
                 Clipboard.SetText(_lastResult.NewHash);
-                MessageBox.Show("Hash başarıyla kopyalandı", "Başarılı", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Hash copied successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch
             {
-                MessageBox.Show("Hash kopyalanamadı", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Failed to copy hash.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
         /// <summary>
-        /// Formu temizle
+        /// Clear form state
         /// </summary>
         private void ClearButton_Click(object sender, RoutedEventArgs e)
         {
@@ -285,15 +285,15 @@ namespace DosyaBütünlüğüDoğrulayıcı.Views
             OldHashTextBox.Text = "";
             AlgorithmComboBox.SelectedIndex = 0;
             ProgressBar.Value = 0;
-            ProgressTextBlock.Text = "Hazır";
+            ProgressTextBlock.Text = "Ready";
             ResultBorder.Visibility = Visibility.Collapsed;
             ErrorBorder.Visibility = Visibility.Collapsed;
-            HashInfoTextBlock.Text = "Dosya seçilmedi";
+            HashInfoTextBlock.Text = "No file selected";
             _lastResult = null;
         }
 
         /// <summary>
-        /// Dosya boyutunu formatlı göster
+        /// Format file size in human-readable units
         /// </summary>
         private static string FormatFileSize(long bytes)
         {

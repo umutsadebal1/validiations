@@ -19,6 +19,16 @@ namespace DosyaBütünlüğüDoğrulayıcı.Services
         public ThemeService()
         {
             var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            if (string.IsNullOrWhiteSpace(appDataPath))
+            {
+                appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            }
+
+            if (string.IsNullOrWhiteSpace(appDataPath))
+            {
+                appDataPath = AppDomain.CurrentDomain.BaseDirectory;
+            }
+
             var settingsDir = Path.Combine(appDataPath, "DosyaBütünlüğüDoğrulayıcı");
 
             if (!Directory.Exists(settingsDir))
@@ -79,6 +89,14 @@ namespace DosyaBütünlüğüDoğrulayıcı.Services
             ThemeChanged?.Invoke(_isDarkTheme);
         }
 
+        public void SetTheme(bool isDarkTheme)
+        {
+            _isDarkTheme = isDarkTheme;
+            ApplyTheme();
+            SaveThemeSettings();
+            ThemeChanged?.Invoke(_isDarkTheme);
+        }
+
         /// <summary>
         /// Temayı uygula
         /// </summary>
@@ -90,10 +108,18 @@ namespace DosyaBütünlüğüDoğrulayıcı.Services
                     ? new Uri("Resources/DarkTheme.xaml", UriKind.Relative)
                     : new Uri("Resources/LightTheme.xaml", UriKind.Relative);
 
-                // Mevcut tema resource'unu kaldır
-                Application.Current.Resources.MergedDictionaries.Clear();
+                // Remove only previously applied theme dictionaries.
+                for (int i = Application.Current.Resources.MergedDictionaries.Count - 1; i >= 0; i--)
+                {
+                    var source = Application.Current.Resources.MergedDictionaries[i].Source?.OriginalString;
+                    if (string.Equals(source, "Resources/DarkTheme.xaml", StringComparison.OrdinalIgnoreCase) ||
+                        string.Equals(source, "Resources/LightTheme.xaml", StringComparison.OrdinalIgnoreCase))
+                    {
+                        Application.Current.Resources.MergedDictionaries.RemoveAt(i);
+                    }
+                }
 
-                // Yeni temayı ekle
+                // Add selected theme dictionary.
                 var dictionary = new ResourceDictionary { Source = themeUri };
                 Application.Current.Resources.MergedDictionaries.Add(dictionary);
             }

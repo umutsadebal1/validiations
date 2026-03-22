@@ -7,6 +7,18 @@
              d:DesignHeight="600" d:DesignWidth="800"
              Background="{DynamicResource BackgroundBrush}">
 
+    <UserControl.Resources>
+        <Style x:Key="ReadableDisabledButtonStyle" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Style.Triggers>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Background" Value="#E0E0E0"/>
+                    <Setter Property="Foreground" Value="#4A4A4A"/>
+                    <Setter Property="Opacity" Value="1"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="30,20,30,30">
             <TextBlock Text="👁️ File Monitoring" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource AccentBrush}" Margin="0,0,0,30"/>
@@ -27,7 +39,7 @@
             <TextBlock Text="2. Manage Monitoring" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource ForegroundBrush}" Margin="0,0,0,12"/>
             <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
                 <Button Name="BtnStartMonitor" Content="▶ START" Click="BtnStartMonitor_Click" Padding="15,10" Width="150" Margin="0,0,10,0"/>
-                <Button Name="BtnStopMonitor" Content="⏹ STOP" Click="BtnStopMonitor_Click" Padding="15,10" Width="150" IsEnabled="False"/>
+                <Button Name="BtnStopMonitor" Content="⏹ STOP" Click="BtnStopMonitor_Click" Padding="15,10" Width="150" Style="{StaticResource ReadableDisabledButtonStyle}" IsEnabled="False"/>
             </StackPanel>
             
             <TextBlock Text="3. File Changes" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource ForegroundBrush}" Margin="0,0,0,12"/>

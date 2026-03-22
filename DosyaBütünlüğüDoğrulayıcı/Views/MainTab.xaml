@@ -4,19 +4,45 @@
       Title="Main Page"
       Background="{DynamicResource BackgroundBrush}">
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <StackPanel VerticalAlignment="Top" 
-                   MaxWidth="600"
-                   Margin="30,20,30,30">
+    <Page.Resources>
+        <Style x:Key="ReadableDisabledButtonStyle" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Style.Triggers>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Background" Value="#E0E0E0"/>
+                    <Setter Property="Foreground" Value="#4A4A4A"/>
+                    <Setter Property="Opacity" Value="1"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Page.Resources>
 
-            <!-- Başlık -->
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Tab Control -->
+        <TabControl Name="MainTabControl" 
+                   Grid.Row="0"
+                   Background="{DynamicResource BackgroundBrush}"
+                   Foreground="{DynamicResource ForegroundBrush}">
+            
+            <!-- File Hash Tab -->
+            <TabItem Header="File Hash" Padding="20,8">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel VerticalAlignment="Top" 
+                               MaxWidth="600"
+                               Margin="30,20,30,30">
+
+            <!-- Title -->
             <TextBlock Text="Hash Calculator" 
                       FontSize="24" 
                       FontWeight="Bold"
                       Foreground="{DynamicResource AccentBrush}"
                       Margin="0,0,0,30"/>
 
-            <!-- Dosya Seçim Bölümü -->
+            <!-- File Selection Section -->
             <TextBlock Text="1. Select File" 
                       FontSize="14"
                       FontWeight="SemiBold"
@@ -51,7 +77,7 @@
                 </Grid>
             </Border>
 
-            <!-- Algoritma Seçimi Bölümü -->
+            <!-- Algorithm Selection Section -->
             <TextBlock Text="2. Select Algorithm" 
                       FontSize="14"
                       FontWeight="SemiBold"
@@ -70,7 +96,7 @@
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
                     
-                    <TextBlock Text="SHA256, SHA512, MD5, SHA1 algoritmaları desteklendi." 
+                    <TextBlock Text="SHA256, SHA512, MD5, SHA1 algorithms supported." 
                               FontSize="11"
                               Foreground="#999999"
                               Margin="0,0,0,10"/>
@@ -89,7 +115,7 @@
             </Border>
 
             <!-- Buttons -->
-            <TextBlock Text="3. Calculate" 
+            <TextBlock Text="3. Calculate Hash" 
                       FontSize="14"
                       FontWeight="SemiBold"
                       Foreground="{DynamicResource ForegroundBrush}"
@@ -110,6 +136,7 @@
                        Width="140"
                        Padding="10,8"
                        Click="BtnCopy_Click"
+                      Style="{StaticResource ReadableDisabledButtonStyle}"
                        IsEnabled="False"/>
             </StackPanel>
 
@@ -136,7 +163,132 @@
                         Text="Hash result will be shown here..."/>
             </Border>
 
-        </StackPanel>
-    </ScrollViewer>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- Folder Hash Tab -->
+            <TabItem Header="Folder Hash" Padding="20,8">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel VerticalAlignment="Top" 
+                               MaxWidth="600"
+                               Margin="30,20,30,30">
+
+                        <!-- Title -->
+                        <TextBlock Text="Folder Hash Calculator" 
+                                  FontSize="24" 
+                                  FontWeight="Bold"
+                                  Foreground="{DynamicResource AccentBrush}"
+                                  Margin="0,0,0,30"/>
+
+                        <!-- Folder Selection Section -->
+                        <TextBlock Text="1. Select Folder" 
+                                  FontSize="14"
+                                  FontWeight="SemiBold"
+                                  Foreground="{DynamicResource ForegroundBrush}"
+                                  Margin="0,0,0,12"/>
+                        
+                        <Border CornerRadius="8" 
+                               Background="{DynamicResource SurfaceBrush}"
+                               BorderBrush="{DynamicResource BorderBrush}"
+                               BorderThickness="1"
+                               Padding="15"
+                               Margin="0,0,0,20">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBox Name="TxtFolderPath" 
+                                        IsReadOnly="True"
+                                        Padding="10"
+                                        Text="No folder selected..."
+                                        VerticalAlignment="Center"/>
+
+                                <Button Grid.Column="1" 
+                                       Name="BtnSelectFolder"
+                                       Content="Browse"
+                                       Width="100"
+                                       Padding="10,8"
+                                       Margin="10,0,0,0"
+                                       Click="BtnSelectFolder_Click"/>
+                            </Grid>
+                        </Border>
+
+                        <!-- Algorithm Selection Section -->
+                        <TextBlock Text="2. Select Algorithm" 
+                                  FontSize="14"
+                                  FontWeight="SemiBold"
+                                  Foreground="{DynamicResource ForegroundBrush}"
+                                  Margin="0,0,0,12"/>
+                        
+                        <Border CornerRadius="8" 
+                               Background="{DynamicResource SurfaceBrush}"
+                               BorderBrush="{DynamicResource BorderBrush}"
+                               BorderThickness="1"
+                               Padding="15"
+                               Margin="0,0,0,20">
+                            <ComboBox Name="ComboAlgorithmFolder" 
+                                     Padding="10"
+                                     SelectedValuePath="Content"
+                                     Height="38">
+                                <ComboBoxItem>SHA256</ComboBoxItem>
+                                <ComboBoxItem>SHA512</ComboBoxItem>
+                                <ComboBoxItem>MD5</ComboBoxItem>
+                                <ComboBoxItem>SHA1</ComboBoxItem>
+                            </ComboBox>
+                        </Border>
+
+                        <!-- Buttons -->
+                        <TextBlock Text="3. Calculate All Hashes" 
+                                  FontSize="14"
+                                  FontWeight="SemiBold"
+                                  Foreground="{DynamicResource ForegroundBrush}"
+                                  Margin="0,0,0,12"/>
+                        
+                        <StackPanel Orientation="Horizontal" 
+                                   Margin="0,0,0,20"
+                                   Height="45">
+                            <Button Name="BtnCalculateFolder" 
+                                   Content="▶ Calculate"
+                                   Width="140"
+                                   Padding="10,8"
+                                   Click="BtnCalculateFolder_Click"
+                                   Margin="0,0,10,0"/>
+
+                            <Button Name="BtnExportFolder" 
+                                   Content="📥 Export"
+                                   Width="140"
+                                   Padding="10,8"
+                                   Click="BtnExportFolder_Click"
+                                Style="{StaticResource ReadableDisabledButtonStyle}"
+                                   IsEnabled="False"/>
+                        </StackPanel>
+
+                        <!-- Result Section -->
+                        <TextBlock Text="4. Results" 
+                                  FontSize="14"
+                                  FontWeight="SemiBold"
+                                  Foreground="{DynamicResource ForegroundBrush}"
+                                  Margin="0,0,0,12"/>
+                        
+                        <Border CornerRadius="8" 
+                               Background="{DynamicResource SurfaceBrush}"
+                               BorderBrush="{DynamicResource BorderBrush}"
+                               BorderThickness="1"
+                               Padding="15">
+                            <ListBox Name="LstFolderResults" 
+                                    Height="300"
+                                    Background="{DynamicResource SurfaceBrush}"
+                                    Foreground="{DynamicResource ForegroundBrush}"/>
+                        </Border>
+
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+        </TabControl>
+
+    </Grid>
 
 </Page>

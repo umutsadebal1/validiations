@@ -1,3 +1,0 @@
-﻿Test file: test1.txt 
-Created: 03/19/2026 15:30:26
-For VALİDC# testing

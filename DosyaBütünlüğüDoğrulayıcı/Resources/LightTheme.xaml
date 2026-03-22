@@ -18,6 +18,8 @@
     <SolidColorBrush x:Key="BorderBrush" Color="#d4d4d4"/>
     <SolidColorBrush x:Key="HoverBrush" Color="#e8e8e8"/>
     <SolidColorBrush x:Key="SurfaceBrush" Color="#ffffff"/>
+    <SolidColorBrush x:Key="SidebarButtonBackgroundBrush" Color="#4f5b66"/>
+    <SolidColorBrush x:Key="SidebarButtonForegroundBrush" Color="#ffffff"/>
     
     <!-- Global Styles -->
     <Style TargetType="Window">
@@ -37,10 +39,14 @@
         <Setter Property="Foreground" Value="white"/>
         <Setter Property="Padding" Value="10,5"/>
         <Setter Property="BorderThickness" Value="0"/>
-        <Setter Property="CornerRadius" Value="5"/>
         <Setter Property="Cursor" Value="Hand"/>
         <Setter Property="FontWeight" Value="SemiBold"/>
         <Style.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Background" Value="#E0E0E0"/>
+                <Setter Property="Foreground" Value="#555555"/>
+                <Setter Property="Opacity" Value="1"/>
+            </Trigger>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Background" Value="#1084d7"/>
             </Trigger>

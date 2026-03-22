@@ -5,7 +5,7 @@ using DosyaBütünlüğüDoğrulayıcı.Services;
 namespace DosyaBütünlüğüDoğrulayıcı.Views
 {
     /// <summary>
-    /// İzlet - Dosya izleme sekmesi
+    /// File monitoring tab
     /// </summary>
     public partial class MonitorTab : UserControl
     {
@@ -20,22 +20,36 @@ namespace DosyaBütünlüğüDoğrulayıcı.Views
         }
 
         /// <summary>
-        /// Klasör seç dialog'u aç
+        /// Open folder selection dialog
         /// </summary>
         private void BtnSelectFolder_Click(object sender, RoutedEventArgs e)
         {
-            // Display a message asking the user to enter the folder path manually
-            MessageBox.Show("Lütfen aşağıdaki metin kutusuna izlemek istediğiniz klasörün yolunu girin.", "Klasör Seç", MessageBoxButton.OK, MessageBoxImage.Information);
+            using var folderDialog = new System.Windows.Forms.FolderBrowserDialog
+            {
+                Description = "Select a folder to monitor",
+                ShowNewFolderButton = false
+            };
+
+            if (folderDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                _selectedFolder = folderDialog.SelectedPath;
+                TxtFolderPath.Text = _selectedFolder;
+            }
         }
 
         /// <summary>
-        /// İzlemeyi başlat
+        /// Start monitoring
         /// </summary>
         private void BtnStartMonitor_Click(object sender, RoutedEventArgs e)
         {
+            if (string.IsNullOrWhiteSpace(_selectedFolder) && !string.IsNullOrWhiteSpace(TxtFolderPath.Text))
+            {
+                _selectedFolder = TxtFolderPath.Text.Trim();
+            }
+
             if (string.IsNullOrEmpty(_selectedFolder))
             {
-                MessageBox.Show("Lütfen bir klasör seçin!", "Uyarı", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Please select a folder first.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -43,30 +57,30 @@ namespace DosyaBütünlüğüDoğrulayıcı.Views
             {
                 BtnStartMonitor.IsEnabled = false;
                 BtnStopMonitor.IsEnabled = true;
-                TxtMonitorStatus.Text = "Durum: İzleme başladı ✓";
+                TxtMonitorStatus.Text = "Status: Monitoring started ✓";
                 ListViewMonitor.ItemsSource = _monitorService.MonitoredFiles;
-                MessageBox.Show($"İzleme başladı: {_selectedFolder}", "Bilgi", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show($"Monitoring started: {_selectedFolder}", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 
         /// <summary>
-        /// İzlemeyi durdur
+        /// Stop monitoring
         /// </summary>
         private void BtnStopMonitor_Click(object sender, RoutedEventArgs e)
         {
             _monitorService.StopMonitoring();
             BtnStartMonitor.IsEnabled = true;
             BtnStopMonitor.IsEnabled = false;
-            TxtMonitorStatus.Text = "Durum: İzleme durmuş ⏸";
-            MessageBox.Show("İzleme durduruldu.", "Bilgi", MessageBoxButton.OK, MessageBoxImage.Information);
+            TxtMonitorStatus.Text = "Status: Monitoring stopped ⏸";
+            MessageBox.Show("Monitoring stopped.", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         /// <summary>
-        /// Dosya değişikliği event
+        /// File changed event callback
         /// </summary>
         private void OnFileChanged(DosyaBütünlüğüDoğrulayıcı.Models.FileMonitorItem item)
         {
-            // ListView otomatik olarak ObservableCollection'ı izler
+            // ListView refreshes automatically through ObservableCollection binding.
         }
     }
 }

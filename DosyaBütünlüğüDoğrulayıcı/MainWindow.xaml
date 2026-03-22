@@ -42,8 +42,8 @@
                         Click="BtnDashboard_Click"
                         Margin="8,8,8,4"
                         Padding="10,12"
-                        Background="#007ACC"
-                        Foreground="White"
+                    Background="{DynamicResource SidebarButtonBackgroundBrush}"
+                    Foreground="{DynamicResource SidebarButtonForegroundBrush}"
                         FontSize="11"
                         FontWeight="SemiBold"
                         BorderThickness="0"
@@ -54,8 +54,8 @@
                         Click="BtnMainTab_Click"
                         Margin="8,4,8,4"
                         Padding="10,12"
-                        Background="#3e3e42"
-                        Foreground="White"
+                    Background="{DynamicResource SidebarButtonBackgroundBrush}"
+                    Foreground="{DynamicResource SidebarButtonForegroundBrush}"
                         FontSize="11"
                         FontWeight="SemiBold"
                         BorderThickness="0"
@@ -66,8 +66,8 @@
                         Click="BtnVerifyTab_Click"
                         Margin="8,4,8,4"
                         Padding="10,12"
-                        Background="#3e3e42"
-                        Foreground="White"
+                    Background="{DynamicResource SidebarButtonBackgroundBrush}"
+                    Foreground="{DynamicResource SidebarButtonForegroundBrush}"
                         FontSize="11"
                         FontWeight="SemiBold"
                         BorderThickness="0"
@@ -78,8 +78,8 @@
                         Click="BtnMonitorTab_Click"
                         Margin="8,4,8,4"
                         Padding="10,12"
-                        Background="#3e3e42"
-                        Foreground="White"
+                    Background="{DynamicResource SidebarButtonBackgroundBrush}"
+                    Foreground="{DynamicResource SidebarButtonForegroundBrush}"
                         FontSize="11"
                         FontWeight="SemiBold"
                         BorderThickness="0"
@@ -90,8 +90,8 @@
                         Click="BtnSettingsTab_Click"
                         Margin="8,4,8,4"
                         Padding="10,12"
-                        Background="#3e3e42"
-                        Foreground="White"
+                    Background="{DynamicResource SidebarButtonBackgroundBrush}"
+                    Foreground="{DynamicResource SidebarButtonForegroundBrush}"
                         FontSize="11"
                         FontWeight="SemiBold"
                         BorderThickness="0"
@@ -107,8 +107,8 @@
                 <Button Name="BtnThemeToggle" 
                         Content="🌙 Toggle Theme" 
                         Click="BtnThemeToggle_Click"
-                        Background="#444447"
-                        Foreground="White"
+                    Background="{DynamicResource SidebarButtonBackgroundBrush}"
+                    Foreground="{DynamicResource SidebarButtonForegroundBrush}"
                         FontSize="11"
                         FontWeight="SemiBold"
                         Padding="10,12"
@@ -135,41 +135,44 @@
         <!-- MAIN CONTENT -->
         <TabControl Grid.Column="1"
                     Name="MainTabControl"
+                    SelectionChanged="MainTabControl_SelectionChanged"
                     Background="{DynamicResource BackgroundBrush}"
                     Margin="0">
+            <TabControl.Resources>
+                <Style TargetType="TabPanel">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                </Style>
+            </TabControl.Resources>
             
             <!-- Dashboard Tab -->
             <TabItem Header="Dashboard" 
-                     x:Name="DashboardTab"
-                     IsSelected="True">
-                <local:DashboardTab/>
+                     x:Name="DashboardTab">
+                 <Grid x:Name="DashboardHost" />
             </TabItem>
 
             <!-- Main Page Tab -->
             <TabItem Header="Main Page" 
-                     x:Name="MainTab">
-                <Frame Source="Views/MainTab.xaml" 
-                       NavigationUIVisibility="Hidden"/>
+                     x:Name="MainTab"
+                     IsSelected="True">
+                <Grid x:Name="MainTabHost" />
             </TabItem>
 
             <!-- Verify Tab -->
             <TabItem Header="✓ Verify" 
                      x:Name="VerifyTab">
-                <local:VerifyTab/>
+                <Grid x:Name="VerifyTabHost" />
             </TabItem>
 
             <!-- Monitor Tab -->
             <TabItem Header="Monitor" 
                      x:Name="MonitorTab">
-                <Frame Source="Views/MonitorTab.xaml" 
-                       NavigationUIVisibility="Hidden"/>
+                <Grid x:Name="MonitorTabHost" />
             </TabItem>
 
             <!-- Settings Tab -->
             <TabItem Header="Settings" 
                      x:Name="SettingsTab">
-                <Frame Source="Views/SettingsTab.xaml" 
-                       NavigationUIVisibility="Hidden"/>
+                <Grid x:Name="SettingsTabHost" />
             </TabItem>
 
         </TabControl>

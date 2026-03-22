@@ -1,16 +1,19 @@
 using System;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using DosyaBütünlüğüDoğrulayıcı.Services;
+using Microsoft.Win32;
 
 namespace DosyaBütünlüğüDoğrulayıcı.Views
 {
     /// <summary>
-    /// Ayarlar - Uygulama ayarları sekmesi
-    /// Tema, başlangıçta açılsın, geçmiş sıfırla, export
+    /// Settings tab for app preferences and maintenance actions
     /// </summary>
     public partial class SettingsTab : UserControl
     {
+        private const string StartupRegistryPath = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Run";
+        private const string StartupValueName = "DosyaButunluguDogrulayici";
         private DatabaseService _dbService;
         private ThemeService _themeService;
 
@@ -19,48 +22,107 @@ namespace DosyaBütünlüğüDoğrulayıcı.Views
             InitializeComponent();
             _dbService = new DatabaseService();
             _themeService = ((App)Application.Current).GetThemeService();
+            _themeService.ThemeChanged += OnThemeChanged;
 
-            // Export format varsayılanı
+            // Default export format
             ComboExportFormat.SelectedIndex = 0;
 
-            // Başlangıçta açılsın checkbox durumunu yükle (opsiyonel)
+            // Load startup checkbox state from registry.
             LoadSettings();
+            UpdateThemeStatus();
+        }
+
+        private void OnThemeChanged(bool isDarkTheme)
+        {
+            Dispatcher.Invoke(UpdateThemeStatus);
+        }
+
+        private void UpdateThemeStatus()
+        {
+            TxtCurrentTheme.Text = _themeService.IsDarkTheme ? "Current Theme: Dark" : "Current Theme: Light";
+            BtnSetDarkTheme.IsEnabled = !_themeService.IsDarkTheme;
+            BtnSetLightTheme.IsEnabled = _themeService.IsDarkTheme;
+        }
+
+        private void BtnSetDarkTheme_Click(object sender, RoutedEventArgs e)
+        {
+            _themeService.SetTheme(true);
+            UpdateThemeStatus();
+        }
+
+        private void BtnSetLightTheme_Click(object sender, RoutedEventArgs e)
+        {
+            _themeService.SetTheme(false);
+            UpdateThemeStatus();
         }
 
         /// <summary>
-        /// Ayarları yükle
+        /// Load settings from system state
         /// </summary>
         private void LoadSettings()
         {
-            // TODO: Windows Registry veya ayarlar dosyasından yükle
+            try
+            {
+                using var key = Registry.CurrentUser.OpenSubKey(StartupRegistryPath, false);
+                ChkStartupCheck.IsChecked = key?.GetValue(StartupValueName) != null;
+            }
+            catch
+            {
+                ChkStartupCheck.IsChecked = false;
+            }
         }
 
         /// <summary>
-        /// Başlangıçta açılsın checkbox işaretlendi
+        /// Enable launch at startup
         /// </summary>
         private void ChkStartupCheck_Checked(object sender, RoutedEventArgs e)
         {
-            // TODO: Windows Registry'ye ekle (for startup)
-            MessageBox.Show("Uygulama başlangıçta açılacak şekilde ayarlandı.", "Bilgi");
+            try
+            {
+                using var key = Registry.CurrentUser.OpenSubKey(StartupRegistryPath, true)
+                    ?? Registry.CurrentUser.CreateSubKey(StartupRegistryPath, true);
+
+                var executablePath = Process.GetCurrentProcess().MainModule?.FileName;
+                if (!string.IsNullOrEmpty(executablePath))
+                {
+                    key?.SetValue(StartupValueName, $"\"{executablePath}\"");
+                }
+
+                MessageBox.Show("Application will launch at startup.", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to enable startup launch: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                ChkStartupCheck.IsChecked = false;
+            }
         }
 
         /// <summary>
-        /// Başlangıçta açılsın checkbox işareti kaldırıldı
+        /// Disable launch at startup
         /// </summary>
         private void ChkStartupCheck_Unchecked(object sender, RoutedEventArgs e)
         {
-            // TODO: Windows Registry'den kaldır
-            MessageBox.Show("Uygulama başlangıçta açılmayacak şekilde ayarlandı.", "Bilgi");
+            try
+            {
+                using var key = Registry.CurrentUser.OpenSubKey(StartupRegistryPath, true);
+                key?.DeleteValue(StartupValueName, false);
+                MessageBox.Show("Application will not launch at startup.", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to disable startup launch: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                ChkStartupCheck.IsChecked = true;
+            }
         }
 
         /// <summary>
-        /// Geçmişi temizle
+        /// Clear saved hash history
         /// </summary>
         private void BtnClearHistory_Click(object sender, RoutedEventArgs e)
         {
             var result = MessageBox.Show(
-                "Hash geçmişini silmek istediğinizden emin misiniz?\nBu işlem geri alınamaz!",
-                "Uyarı",
+                "Are you sure you want to delete all hash history?\nThis action cannot be undone.",
+                "Warning",
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Warning);
 
@@ -68,23 +130,23 @@ namespace DosyaBütünlüğüDoğrulayıcı.Views
             {
                 if (_dbService.ClearHistory())
                 {
-                    MessageBox.Show("Geçmiş başarıyla temizlendi!", "Başarılı", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show("History cleared successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 else
                 {
-                    MessageBox.Show("Geçmiş temizlenirken hata oluştu.", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show("An error occurred while clearing history.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
 
         /// <summary>
-        /// Verileri dışa aktar
+        /// Export history data
         /// </summary>
         private void BtnExport_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                var format = ComboExportFormat.SelectedItem?.ToString() ?? "CSV";
+                var format = (ComboExportFormat.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "CSV";
                 string exportData;
                 string fileName;
 
@@ -99,21 +161,21 @@ namespace DosyaBütünlüğüDoğrulayıcı.Views
                     fileName = $"hash_history_{DateTime.Now:yyyyMMdd_HHmmss}.json";
                 }
 
-                // Desktop'e kaydet
+                // Save to Desktop.
                 var desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
                 var filePath = System.IO.Path.Combine(desktopPath, fileName);
 
                 System.IO.File.WriteAllText(filePath, exportData);
 
                 MessageBox.Show(
-                    $"Veriler başarıyla dışa aktarıldı!\n\n{filePath}",
-                    "Başarılı",
+                    $"Data exported successfully.\n\n{filePath}",
+                    "Success",
                     MessageBoxButton.OK,
                     MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Dışa aktarım sırasında hata: {ex.Message}", "Hata", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Export failed: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

@@ -1,0 +1,14 @@
+.vs/
+.vscode/
+_tmp_build/
+_tmp_obj/
+_build_clone/
+
+# Test assets
+TESTING_GUIDE.md
+test-files/
+
+# Build outputs (project-local)
+DosyaBütünlüğüDoğrulayıcı/bin/
+DosyaBütünlüğüDoğrulayıcı/obj/
+DosyaBütünlüğüDoğrulayıcı/delivery/
