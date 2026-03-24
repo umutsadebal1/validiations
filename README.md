@@ -195,5 +195,5 @@ Kendi kullanım için geliştirilmiştir.
 
 Muhammed Umut Sadebal
 
-Sürüm: **1.0.1**  
+Sürüm: **1.0.2**  
 Son Güncelleme: **22 Mart 2026**
