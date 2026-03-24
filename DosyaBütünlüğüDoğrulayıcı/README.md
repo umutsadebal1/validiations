@@ -193,7 +193,7 @@ Kendi kullanım için geliştirilmiştir.
 
 ## 👤 Geliştirici
 
-**VALID Development** - 2024
+Muhammed Umut Sadebal
 
-Sürüm: **1.0.0**  
-Son Güncelleme: **19 Mart 2024**
+Sürüm: **1.0.2**  
+Son Güncelleme: 24.03.2026
