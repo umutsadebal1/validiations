@@ -187,7 +187,7 @@ Dosya,Hash,Algoritma,Tarih
 
 ## 📝 Lisans
 
-Kendi kullanım için geliştirilmiştir.
+Kendi kullanım için AI yardımı ile yaratılmıştır
 
 ---
 
